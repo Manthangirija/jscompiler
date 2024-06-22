@@ -3,20 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Complier</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Code Editor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
-    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .editor-container {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .editor {
+            height: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #output {
+            white-space: pre-wrap;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <h1>JavaScript Compiler</h1>
-  <textarea id="editor"></textarea>
-  <button onclick="runCode()">Run</button>
-  <pre id="output"></pre>
+    <h1>JavaScript Code Editor</h1>
+    <div class="editor-container">
+        <textarea id="code" class="editor">// Write your JavaScript code here</textarea>
+    </div>
+    <button id="run-button">Run Code</button>
+    <h2>Output:</h2>
+    <pre id="output"></pre>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <script>
+        // Initialize CodeMirror editor
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            lineNumbers: true,
+            mode: "javascript",
+            theme: "default"
+        });
+
+        // Run code button functionality
+        document.getElementById("run-button").addEventListener("click", function() {
+            var code = editor.getValue();
+            var output = document.getElementById("output");
+
+            try {
+                // Capture the console.log output
+                var log = [];
+                console.log = function(message) {
+                    log.push(message);
+                };
+
+                // Run the code
+                var result = eval(code);
+
+                // Display the output
+                output.textContent = log.join("\n") + (result !== undefined ? "\n" + result : '');
+            } catch (error) {
+                output.textContent = error;
+            } finally {
+                // Restore the original console.log function
+                console.log = console.__proto__.log;
+            }
+        });
+    </script>
 </body>
 </html>
